@@ -17,11 +17,11 @@ router.get('/', function(req, res, next) {
 router.post('/',function(req, res, next){
 
 	var newSwitch = new switchSchema();
-	newSwitch.hostname =  req.body.name;
+	newSwitch.hostname =  req.body.hostname;
 	newSwitch.ip = req.body.ip;
 	newSwitch.location = req.body.location;
-	newSwitch.type = req.body.type;
-	if(newSwitch.type === 0){
+	newSwitch.flag = req.body.flag;
+	if(newSwitch.flag === 0){
          
          for(var i = 1 ; i <= 28; i++){
              
@@ -37,7 +37,7 @@ router.post('/',function(req, res, next){
          }
          
     }
-    else if(newSwitch.type === 1){
+    else if(newSwitch.flag === 1){
          
          for(var j = 0 ; j <= 27; j++){
             
@@ -76,53 +76,57 @@ router.put('/:id',function(req, res, next){
     
       var id = req.params.id;
       switchSchema.findOne({_id: id})
-                .lean()
-                .exec(function(err,data){
-                     if(err) return handleError(err);
-                      data.hostname =  req.body.name;
-					  data.ip = req.body.ip;
-					  data.location = req.body.location;
-					  if(data.type == req.params.type){
-
+              .exec(function(err,data){
+                      if(err) return handleError(err);
+                      data.hostname =  req.body.hostname;
+          					  data.ip = req.body.ip;
+          					  data.location = req.body.location;
+                      if(data.flag == req.body.flag){
+                          
+                          console.log('Equal');
                       }
                       else{
-                           
-                           data.type = req.params.type;
-                           if(newSwitch.type === 0){
-         
-                                for(var i = 1 ; i <= 28; i++)
-                                   newSwitch.ports[i] =  { 
-							         	                     port_no : i,
-							                                 description: '',
-							                                 category: '',
-							                                 status:{
-							                                 	flag :  1
-							                                 }
+                          
+                          console.log('Not Equal');           
+                          data.flag = req.body.flag;
+                          data.ports = [];
+                          if(data.flag === 0){
+                   
+                              for(var i = 1 ; i <= 28; i++)
+                                  data.ports.push({ 
+          						         	                     port_no : i,
+          						                                 description: '',
+          						                                 category: '',
+          						                                 status:{
+          						                                 	flag :  1
+          						                                 }
 
-                                                         };
-                           }
-						    else if(newSwitch.type === 1){
-						         
-						         for(var j = 0 ; j <= 27; j++)
-						         newSwitch.ports[j] =  { 
-						         	                     port_no : j,
-						                                 description: '',
-						                                 category: '',
-						                                 status:{
-						                                 	flag :  1
-						                                 }
+                                                  });
+                          }
+          						    else if(data.flag === 1){
+          						         
+          						         for(var j = 0 ; j <= 27; j++)
+          						            data.ports.push({ 
+          						         	                     port_no : j,
+          						                                 description: '',
+          						                                 category: '',
+          						                                 status:{
+          						                                 	flag :  1
+          						                                 }
 
-						                               };
-						    }
+                                                  });
+          						    }
+                          
+                          
                       }
+                      
                       data.save(function(err,result){
                              if(err) return handleError(err);
                              res.send(result);
                       });
                       
+                    
                 });
-
-
 
 });
 

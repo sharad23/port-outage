@@ -20,7 +20,7 @@ var switchSchema = new Schema({
                                 hostname: String,
                                 ip: String,
                                 location: String,
-                                type: Number,
+                                flag: Number,
                                 ports: [ portSchema ],
                                 added_by: { type: Schema.Types.ObjectId, ref: 'User' }
                              
