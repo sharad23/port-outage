@@ -11,12 +11,12 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      all: ['*.js','routes/*.js','schemas/*.js'] 
+      all: ['*.js','routes/*.js','schemas/*.js','cron/*.js'] 
     },
 
     watch: {
       js: {
-        files: ['*.js','routes/*.js','schemas/*.js'],
+        files: ['*.js','routes/*.js','schemas/*.js','cron/*.js'],
         tasks: ['jshint']
       }
     },
