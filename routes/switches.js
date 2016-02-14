@@ -2,14 +2,22 @@ var express = require('express');
 var switchSchema =  require('../schemas/switch');
 var router = express.Router();
 
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   
     switchSchema.find({})
                 .lean()
                 .exec(function(err,data){
-                    if(err) return handleError(err);
-                    res.send(data);         
+                    if(err) return res.json({
+                                               status: 500,
+                                               message: "Database Error: "+err
+                                            });
+                    res.json({
+                                status : 200,
+                                message: "Success",
+                                payload: data
+                            });         
                  });
 
 });
@@ -55,8 +63,15 @@ router.post('/',function(req, res, next){
     }
 
 	newSwitch.save(function (err,data) {
-	    if (err) console.log(err);
-	    res.send(data);
+	    if (err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                               });
+	    res.json({
+                  status : 200,
+                  message: "Success",
+                  payload: data
+               });
 	  
 	});
 });
@@ -66,8 +81,15 @@ router.get('/:id',function(req,res,next){
     switchSchema.findOne({_id: id})
                 .lean()
                 .exec(function(err,data){
-                     if(err) return handleError(err);
-                     res.send(data);
+                     if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                               });
+                     res.json({
+                        status : 200,
+                        message: "Success",
+                        payload: data
+                     });
                 });
 
 });
@@ -121,8 +143,15 @@ router.put('/:id',function(req, res, next){
                       }
                       
                       data.save(function(err,result){
-                             if(err) return handleError(err);
-                             res.send(result);
+                             if(err) return res.json({
+                                                 status: 500,
+                                                 message: "Database Error: "+err
+                                             });
+                             res.json({
+                                        status : 200,
+                                        message: "Success",
+                                        payload: data
+                                     });
                       });
                       
                     
@@ -134,8 +163,13 @@ router.delete('/:id',function(req,res,next){
       
       var id = req.params.id;
       switchSchema.remove({ _id : id }, function (err) {
-		  if (err) return handleError(err);
-		  res.send('Success');
+		  if (err) return  res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                               });
+		  res.json({ status: 200, 
+                 message: 'success'
+              });
 	  });
 });
 

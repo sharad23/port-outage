@@ -7,8 +7,16 @@ router.get('/', function(req, res, next) {
     //list all user 
     
     userSchema.find({},function(err,data){
-         if(err) return handleError(err);
-         res.send(data);
+         
+         if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                                });
+         res.json({
+                    status : 200,
+                    message: "Success",
+                    payload: data
+                });
     });
 
 
@@ -21,8 +29,15 @@ router.post('/',function(req, res, next){
     newUser.dept = req.body.dept;
     newUser.role = req.body.role;
     newUser.save(function(err,result){
-          if(err) return handleError(err);
-          res.send(result);
+          if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                                });
+          res.json({
+                    status : 200,
+                    message: "Success",
+                    payload: result
+                });
     });
 
 });
@@ -35,8 +50,16 @@ router.put('/:id',function(req,res,next){
     	 data.dept = req.body.dept;
     	 data.role = req.body.role;
     	 data.save(function(err,result){
-            if(err) return handleError(err);
-            res.send(result);
+            if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                                });
+            res.json({
+                    status : 200,
+                    message: "Success",
+                    payload: result
+                });
+            
     	 });
     });
 });
@@ -44,16 +67,30 @@ router.get('/:id',function(req,res,next){
     //get specific user
     var id =  req.params.id;
     userSchema.findOne({_id : id},function(err,data){
-           if(err) return handleError(err);
-           res.send(data);
+           if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                                });
+           res.json({
+                    status : 200,
+                    message: "Success",
+                    payload: data
+                });
     });
 });
 router.delete('/:id',function(req,res,next){
 	//delete user
 	var id = req.params.id;
 	userSchema.remove({_id: id},function(err,data){
-           if(err) return handleError(err);
-           res.send(data);
+           if(err) return res.json({
+                                   status: 500,
+                                   message: "Database Error: "+err
+                                });
+           res.json({
+                    status : 200,
+                    message: "Success"
+                    
+                    });
 	});
 
 });

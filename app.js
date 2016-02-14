@@ -4,16 +4,17 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var jwt = require('jwt-simple');
+var app = express();
 var db = require('./db');
-var routes = require('./routes/index');
+
+var routes = require('./routes/index')(app);
+var auth = require('./routes/auth')(app);
 var users = require('./routes/users');
 var switches = require('./routes/switches');
-var auth = require('./routes/auth');
-
-var app = express();
 
 // view engine setup
+app.set('secret','sharad');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -27,6 +28,33 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth',auth);
 app.use('/', routes);
+app.use(function(req,res,next){
+    //decode token
+    var token = (req.body && req.body.access_token) || (req.query && req.query.access_token) || req.headers['x-access-token'];
+    if (token) {
+        try {
+              var decoded = jwt.decode(token, app.get('secret'));
+              req.user = decoded;
+              return next();
+
+            } 
+        catch (err) {
+           res.json({
+                       status: 401,
+                       message: "Invalid Token"
+                    });     
+        }
+    } 
+    else {
+      
+        res.json({
+                    status: 401,
+                    message: "No token provided"
+                });
+    }
+    
+});
+
 app.use('/users', users);
 app.use('/switches',switches);
 
