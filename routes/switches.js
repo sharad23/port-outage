@@ -75,22 +75,7 @@ router.post('/',function(req, res, next){
 	  
 	});
 });
-router.get('/testsharad',function(req,res,next){
-        
-        /*switchSchema.find({'ports.status.flag': 0},
-                          { ports:{$elemMatch: { 'status.flag': 0} }},
-                          function(err,data){
-                              if(err) return console.log(err);
-                              res.send(data);
-                          });
-          */
-          switchSchema.find({'ports.status.flag': 0},function(err,data){
-                    res.send(data);
-          });
-         
 
-        
-});
 router.get('/:id',function(req,res,next){
     
     var id = req.params.id;

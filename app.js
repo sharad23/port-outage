@@ -9,36 +9,7 @@ var snmp = require ("net-snmp");
 var app = express();
 var db = require('./db');
 
-var session = snmp.createSession ("118.91.164.147", "public");
-var oids = ["1.3.6.1.2.1.2.2.1.7."+(7)];
-session.get (oids, function (error, varbinds) {
-    if (error) {
-        console.error (error);
-    } else {
-        console.log(varbinds); 
-    }
-});
-
-/*var oids = ["1.3.6.1.2.1.31.1.1.1.18."+(4)];
-session.get (oids, function (error, varbinds) {
-    if (error) {
-        console.error (error);
-    } else {
-        console.log(varbinds[0].value.toString('utf8')); 
-    }
-
-});
-var oids = ["1.3.6.1.4.1.5651.1.2.2.3.1.1.1.5.1."+(7)];
-session.get (oids, function (error, varbinds) {
-    if (error) {
-        console.error (error);
-    } else {
-        console.log(varbinds[0].value.toString('utf8')); 
-    }
-
-});
-*/
-
+var api  = require('./routes/api');
 var routes = require('./routes/index')(app);
 var auth = require('./routes/auth')(app);
 var users = require('./routes/users');
@@ -59,6 +30,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/auth',auth);
+app.use('/api',api);
 app.use('/', routes);
 app.use(function(req,res,next){
     //decode token
