@@ -1,40 +1,51 @@
+var async =  require('async');
 var db = require('../db');
+var snmp =  require('net-snmp');
 var switchSchema = require('../schemas/switch');
-var sync = function(){
+var async = require('async');
+var sync = function(cb){
 
-	  switchSchema.find({},function(err,data){
+	  switchSchema.find({},function(err,datas){
             if(err) return console.log(err);
-            data.forEach(function(obj){ 
-            	 var session = snmp.createSession (obj.ip, "public");
-            	 if(obj.flag === 0){
-            	 	 obj.ports.forEach(function(port){
-            	 	 	     var num  = port.port_no + 1;
-            	 	 	     var oids = ["1.3.6.1.2.1.31.1.1.1.18."+(num)];
-			                 session.get (oids, function (error, varbinds) {
-                                   if(err) console.error (error);
-                                   var desc = varbinds[0].value.toString('utf8');
-                                   parent.findOneAndUpdate({ 'ports._id': port._id },{ "$set": {"ports.$.description": desc}},function(err,doc) {
-                                       if(err) return console.log(err);
-							           console.log(port.port_no+" of "+obj.hostname+" has been updated");
-							       });
-			                 });
-            	 	 });
-	             }
-	             else if(obj.flag === 1){
-                      obj.ports.forEach(function(port){
-            	 	 	     var num  = port.port_no; 
+         
+
+            async.each(datas,function(data,callback1){
+                 var session = snmp.createSession (data.ip, "public");
+                 async.each(data.ports,function(port,callback2){
+                          if(data.flag === 0){
+                             var num  = port.port_no + 1;
+                             var oids = ["1.3.6.1.2.1.31.1.1.1.18."+(num)];
+                          }
+                          else if(data.flag === 1){
+                             var num  = port.port_no; 
                              var oids = ["1.3.6.1.4.1.5651.1.2.2.3.1.1.1.5.1."+(num)];
-			                 session.get (oids, function (error, varbinds) {
-                                   //do operation
-                                    if(err) console.error (error);
-                                    var desc = varbinds[0].value.toString('utf8');
-			                 });
-            	 	 }); 
-	             }
-    
+                          }
+                          session.get (oids, function (err, varbinds) {
+                                 
+                                 if(err) return console.error (err);
+                                 var desc = varbinds[0].value.toString('utf8');
+                                 switchSchema.findOneAndUpdate({ 'ports._id': port._id },{ "$set": {"ports.$.description": desc}},function(err,doc) {
+                                     if(err) return console.log(port.port_no+" of "+data.hostname+" has not been updated");
+                                     console.log(port.port_no+" of "+data.hostname+" has been updated");
+                                     callback2();
+                                     
+                                 });
+                          });
+                 },
+                 function(err){
+                      callback1();
+                 });
+            },
+            function(err){
+                  console.log('Ended');
+                  cb();
             });
-       });
+    });
 };
 
-console.log('test');
-sync();
+sync(function(){
+      //closing monsoogose connection
+      db.close();
+});
+
+

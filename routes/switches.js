@@ -29,7 +29,7 @@ router.post('/',function(req, res, next){
 	newSwitch.ip = req.body.ip;
 	newSwitch.location = req.body.location;
 	newSwitch.flag = req.body.flag;
-	if(newSwitch.flag === 0){
+	if(newSwitch.flag === 1){
          
          for(var i = 1 ; i <= 28; i++){
              
@@ -45,7 +45,7 @@ router.post('/',function(req, res, next){
          }
          
     }
-    else if(newSwitch.flag === 1){
+  else if(newSwitch.flag === 0){
          
          for(var j = 0 ; j <= 27; j++){
             
@@ -60,9 +60,9 @@ router.post('/',function(req, res, next){
                                      });
           }
 
-    }
-
-	newSwitch.save(function (err,data) {
+  }
+  newSwitch.added_by = req.user._id;
+  newSwitch.save(function (err,data) {
 	    if (err) return res.json({
                                    status: 500,
                                    message: "Database Error: "+err
@@ -74,6 +74,22 @@ router.post('/',function(req, res, next){
                });
 	  
 	});
+});
+router.get('/testsharad',function(req,res,next){
+        
+        /*switchSchema.find({'ports.status.flag': 0},
+                          { ports:{$elemMatch: { 'status.flag': 0} }},
+                          function(err,data){
+                              if(err) return console.log(err);
+                              res.send(data);
+                          });
+          */
+          switchSchema.find({'ports.status.flag': 0},function(err,data){
+                    res.send(data);
+          });
+         
+
+        
 });
 router.get('/:id',function(req,res,next){
     
@@ -112,7 +128,7 @@ router.put('/:id',function(req, res, next){
                           console.log('Not Equal');           
                           data.flag = req.body.flag;
                           data.ports = [];
-                          if(data.flag === 0){
+                          if(data.flag === 1){
                    
                               for(var i = 1 ; i <= 28; i++)
                                   data.ports.push({ 
@@ -125,7 +141,7 @@ router.put('/:id',function(req, res, next){
 
                                                   });
                           }
-          						    else if(data.flag === 1){
+          						    else if(data.flag === 0){
           						         
           						         for(var j = 0 ; j <= 27; j++)
           						            data.ports.push({ 
@@ -172,6 +188,8 @@ router.delete('/:id',function(req,res,next){
               });
 	  });
 });
+
+
 
 
 module.exports = router;

@@ -9,8 +9,8 @@ var snmp = require ("net-snmp");
 var app = express();
 var db = require('./db');
 
-var session = snmp.createSession ("118.91.164.1", "public");
-/*var oids = ["1.3.6.1.2.1.2.2.1.7."+(7)];
+var session = snmp.createSession ("118.91.164.147", "public");
+var oids = ["1.3.6.1.2.1.2.2.1.7."+(7)];
 session.get (oids, function (error, varbinds) {
     if (error) {
         console.error (error);
@@ -18,17 +18,26 @@ session.get (oids, function (error, varbinds) {
         console.log(varbinds); 
     }
 });
-*/
 
-var oids = ["1.3.6.1.2.1.31.1.1.1.18."+(4)];
+/*var oids = ["1.3.6.1.2.1.31.1.1.1.18."+(4)];
 session.get (oids, function (error, varbinds) {
     if (error) {
         console.error (error);
     } else {
         console.log(varbinds[0].value.toString('utf8')); 
     }
-});
 
+});
+var oids = ["1.3.6.1.4.1.5651.1.2.2.3.1.1.1.5.1."+(7)];
+session.get (oids, function (error, varbinds) {
+    if (error) {
+        console.error (error);
+    } else {
+        console.log(varbinds[0].value.toString('utf8')); 
+    }
+
+});
+*/
 
 var routes = require('./routes/index')(app);
 var auth = require('./routes/auth')(app);
