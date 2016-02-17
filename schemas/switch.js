@@ -13,7 +13,7 @@ var portSchema  = new Schema({
 	                          	   flag:Number,
 	                          	   down_time:Date
 	                          },
-	                         logs:[ logSchema ]  
+	                          logs:[ logSchema ]  
 	                      });
 
 var switchSchema = new Schema({
@@ -21,6 +21,7 @@ var switchSchema = new Schema({
                                 ip: String,
                                 location: String,
                                 flag: Number,
+                                community: String,
                                 ports: [ portSchema ],
                                 added_by: { type: Schema.Types.ObjectId, ref: 'User' }
                              

@@ -9,17 +9,20 @@ router.get('/', function(req, res, next) {
     switchSchema.find({})
                 .lean()
                 .exec(function(err,data){
-                    if(err) return res.json({
+
+                   
+                          if(err) return res.json({
                                                status: 500,
                                                message: "Database Error: "+err
                                             });
-                    res.json({
-                                status : 200,
-                                message: "Success",
-                                payload: data
-                            });         
-                 });
-
+                    
+                          res.json({
+                                      status : 200,
+                                      message: "Success",
+                                      payload: data
+                                  });
+                    });
+                   
 });
 
 router.post('/',function(req, res, next){
@@ -29,6 +32,7 @@ router.post('/',function(req, res, next){
 	newSwitch.ip = req.body.ip;
 	newSwitch.location = req.body.location;
 	newSwitch.flag = req.body.flag;
+  newSwitch.community = req.body.community;
 	if(newSwitch.flag === 1){
          
          for(var i = 1 ; i <= 28; i++){
@@ -95,6 +99,8 @@ router.get('/:id',function(req,res,next){
 
 });
 
+
+
 router.put('/:id',function(req, res, next){
     
       var id = req.params.id;
@@ -104,56 +110,22 @@ router.put('/:id',function(req, res, next){
                       data.hostname =  req.body.hostname;
           					  data.ip = req.body.ip;
           					  data.location = req.body.location;
-                      if(data.flag == req.body.flag){
-                          
-                          console.log('Equal');
-                      }
-                      else{
-                          
-                          console.log('Not Equal');           
-                          data.flag = req.body.flag;
-                          data.ports = [];
-                          if(data.flag === 1){
-                   
-                              for(var i = 1 ; i <= 28; i++)
-                                  data.ports.push({ 
-          						         	                     port_no : i,
-          						                                 description: '',
-          						                                 category: '',
-          						                                 status:{
-          						                                 	flag :  1
-          						                                 }
-
-                                                  });
-                          }
-          						    else if(data.flag === 0){
-          						         
-          						         for(var j = 0 ; j <= 27; j++)
-          						            data.ports.push({ 
-          						         	                     port_no : j,
-          						                                 description: '',
-          						                                 category: '',
-          						                                 status:{
-          						                                 	flag :  1
-          						                                 }
-
-                                                  });
-          						    }
-                          
-                          
-                      }
-                      
+                      data.community = req.body.community;
+                      for(var i = 0 ; i < data.ports.length; i++){
+                           data.ports[i].category = req.body.ports[i];
+                       }
                       data.save(function(err,result){
-                             if(err) return res.json({
-                                                 status: 500,
-                                                 message: "Database Error: "+err
-                                             });
-                             res.json({
-                                        status : 200,
-                                        message: "Success",
-                                        payload: data
-                                     });
-                      });
+
+                          if(err) return res.json({
+                                             status: 500,
+                                             message: "Database Error: "+err
+                                         });
+                          res.json({
+                                    status : 200,
+                                    message: "Success",
+                                    payload: data
+                                 });
+                       });
                       
                     
                 });

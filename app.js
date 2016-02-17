@@ -5,15 +5,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var jwt = require('jwt-simple');
-var snmp = require ("net-snmp");
+var snmp = require("net-snmp");
 var app = express();
 var db = require('./db');
 
-var api  = require('./routes/api');
+
+var io = require('socket.io').listen(app.listen(4000));
+io.sockets.on('connection', function (socket) {
+    console.log('client connect');
+});
+var api  = require('./routes/api')(app,io);
 var routes = require('./routes/index')(app);
 var auth = require('./routes/auth')(app);
 var users = require('./routes/users');
 var switches = require('./routes/switches');
+
+
 
 // view engine setup
 app.set('secret','sharad');
