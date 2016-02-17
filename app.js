@@ -15,7 +15,6 @@ var auth = require('./routes/auth')(app);
 var users = require('./routes/users');
 var switches = require('./routes/switches');
 
-
 // view engine setup
 app.set('secret','sharad');
 app.set('views', path.join(__dirname, 'views'));

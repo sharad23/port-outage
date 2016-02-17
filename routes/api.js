@@ -26,7 +26,7 @@ router.get('/:ip/:port/:status',function(req,res,next){
      }
      else if(status === "on"){
          
-     	switchSchema.findOne({'ip': ip },function(err,data){
+     	/*switchSchema.findOne({'ip': ip },function(err,data){
      	 	      if(err)  return console.log(err);  
                   async.each(data.ports,function(port,cb){
                        if(port.port_no === portVal){
@@ -49,7 +49,24 @@ router.get('/:ip/:port/:status',function(req,res,next){
                   });
      	        
      	          
-     	 });
+     	 });*/
+        
+        switchSchema.findOneAndUpdate(
+            { "ip": ip, "ports.port_no": portVal },
+            { 
+                "$set": {
+                    "ports.$.status.flag": 1
+                 },
+                 "$push": {'ports.$.logs' : {from_time:date, to_time:date} }
+            },
+            { 
+               "upsert": false 
+            },
+            function(err,result) {
+                       if(err) return console.log(err);
+                       res.send(result);
+            });
+       
      }
 });
 

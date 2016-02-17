@@ -22,18 +22,24 @@ var sync = function(cb){
                           }
                           session.get (oids, function (err, varbinds) {
                                  
-                                 if(err) return console.error (err);
+                                 if(err){  
+                                           console.log(port.port_no+" of "+data.hostname+" has not  been fetched");
+                                           callback2();
+                                           return console.error (err);
+                                 }
                                  var desc = varbinds[0].value.toString('utf8');
-                                 switchSchema.findOneAndUpdate({ 'ports._id': port._id },{ "$set": {"ports.$.description": desc}},function(err,doc) {
-                                     if(err) return console.log(port.port_no+" of "+data.hostname+" has not been updated");
-                                     console.log(port.port_no+" of "+data.hostname+" has been updated");
-                                     callback2();
-                                     
-                                 });
+                                 console.log(port.port_no+" of "+data.hostname+" has been changed to "+desc);
+                                 port.description = desc;
+                                 callback2();
+
                           });
                  },
                  function(err){
-                      callback1();
+                      data.save(function(err,result){
+                            if(err) return console.log(err);
+                            callback1();
+                      });
+                     
                  });
             },
             function(err){
@@ -44,8 +50,7 @@ var sync = function(cb){
 };
 
 sync(function(){
-      //closing monsoogose connection
-      db.close();
+    db.close();
 });
 
 
