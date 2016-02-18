@@ -80,6 +80,23 @@ router.post('/',function(req, res, next){
 	});
 });
 
+router.get('/testSharad',function(req,res,next){
+
+        switchSchema.aggregate([
+                    { "$match": { "ip": "118.91.164.147" } },
+                    { "$unwind": "$ports" },
+                    { "$match": { "ports.port_no" : 2 } },
+                    { "$group": {
+                        "_id": "$_id",
+                        "hostname": { "$first": "$hostname" },
+                        "ports": { "$push": "$ports" }
+                    }}
+                 ],function(err,data){
+                       if(err) return console.log(err);
+                       res.send(data[0].ports[0].status.down_time);
+                 });
+});
+
 router.get('/:id',function(req,res,next){
     
     var id = req.params.id;
